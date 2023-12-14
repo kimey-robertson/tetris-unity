@@ -5,61 +5,47 @@ using UnityEngine;
 public class BlockSpawnScript : MonoBehaviour
 {
     public float spawnRate = 3;
-    private float timer = 0;
-    public GameObject Red;
-    public GameObject Green;
-    private List<GameObject> allBlocks = new List<GameObject>();
-    private System.Random random = new System.Random();
+    //private float timer = 0;
+    public GameObject Block;
+    private Color[] predefinedColors = {
+        Color.red,
+        Color.green,
+        Color.blue,
+        Color.yellow,
+        Color.cyan,
+        Color.magenta,
+        new Color(1f, 0.5f, 0f), // Orange
+    };
+    public bool blockStopped = false;
 
     // Start is called before the first frame update
     void Start()
     {
-        //SpawnBlock();
-
-        // Add all the block to the list
-        allBlocks.Add(Red);
-        allBlocks.Add(Green);
-
+        blockStopped = false;
+        SpawnBlock();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (timer < spawnRate)
-        {
-            timer += Time.deltaTime;
-        }
-        else
-        {
+        if (blockStopped == true)
+        { 
             SpawnBlock();
-            timer = 0;
         }
     }
 
     void SpawnBlock()
     {
-        GameObject randomBlock = GetRandomBlock();
-
-        Instantiate(randomBlock, new Vector3(-3.5f, 4.5f, -1), transform.rotation);
+        Instantiate(Block, new Vector3(-3.5f, 9.5f, -1), transform.rotation);
+        SetRandomColor(Block);
+        blockStopped = false;
 
     }
 
-    GameObject GetRandomBlock()
+    void SetRandomColor(GameObject block)
     {
-        // Check if the list is not empty
-        if (allBlocks.Count > 0)
-        {
-            // Generate a random index
-            int randomIndex = random.Next(0, allBlocks.Count);
-
-            // Return the GameObject at the random index
-            return allBlocks[randomIndex];
-        }
-        else
-        {
-            // Handle the case where the list is empty
-            Debug.LogWarning("The list of blocks is empty.");
-            return null; // or some default GameObject
-        }
+        Color randomColor = predefinedColors[Random.Range(0, predefinedColors.Length)];
+        block.GetComponent<SpriteRenderer>().color = randomColor;
     }
+
 }

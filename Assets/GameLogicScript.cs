@@ -161,18 +161,18 @@ public class GameLogicScript : MonoBehaviour
     // Function to find the corresponding GridCell for a given position
     public GridCell FindGridCellByPosition(GameObject block)
     {
-        BlockScript blockScript = block.GetComponent<BlockScript>();
+        //BlockScript blockScript = block.GetComponent<BlockScript>();
         Vector2 blockPosition = Vector2.zero;  // Declare blockPosition outside the if statement
 
-        if (blockScript != null)
-        {
-            // Find the corresponding cell based on the block's position
-            blockPosition = new Vector2(block.transform.position.x, block.transform.position.y);
+        //if (blockScript != null)
+        //{
+        //    // Find the corresponding cell based on the block's position
+        //    blockPosition = new Vector2(block.transform.position.x, block.transform.position.y);
 
-            //blockScript.CurrentGridCell = FindGridCellByPosition(blockPosition);
-            //Debug.Log(blockPosition);
+        //    //blockScript.CurrentGridCell = FindGridCellByPosition(blockPosition);
+        //    //Debug.Log(blockPosition);
             
-        }
+        //}
 
         foreach (GridCell cell in grid)
         {

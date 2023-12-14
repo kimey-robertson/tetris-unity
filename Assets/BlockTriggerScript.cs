@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameBoardFloorScript : MonoBehaviour
+public class BlockTriggerScript : MonoBehaviour
 {
+    public GameObject Block;
     public BlockSpawnScript blockSpawnScript;
     // Start is called before the first frame update
     void Start()
@@ -14,7 +15,23 @@ public class GameBoardFloorScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Move the object to the nearest 0.5 decimal place on both x and y coordinates
+        float roundedX = Mathf.Round(Block.transform.position.x * 2.0f) / 2.0f;
+        float roundedY = Mathf.Round(Block.transform.position.y * 2.0f) / 2.0f;
 
+        // Check if the position needs adjustment
+        if (roundedX != Block.transform.position.x || roundedY != Block.transform.position.y)
+        {
+            // Update the object's position
+            Block.transform.position = new Vector3(roundedX, roundedY, Block.transform.position.z);
+        }
+
+        // Ensure that the z rotation is always adjusted to 0
+        if (Block.transform.rotation.eulerAngles.z != 0f)
+        {
+            // Update the object's rotation
+            Block.transform.rotation = Quaternion.Euler(Block.transform.rotation.eulerAngles.x, Block.transform.rotation.eulerAngles.y, 0f);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -26,6 +43,7 @@ public class GameBoardFloorScript : MonoBehaviour
         // Access the collidedObject's children
         Transform collidedObjectTrigger = collidedObject.transform.Find("Trigger");
 
+        // Turn off the collidedObject's Move Script
         collidedObject.GetComponent<BlockMoveScript>().enabled = false;
 
         // Tell Block Spawn Script that the block has stopped moving, so it can spawn another block
@@ -44,6 +62,4 @@ public class GameBoardFloorScript : MonoBehaviour
             Debug.LogError("Trigger not found on the collided object.");
         }
     }
-
 }
- 

@@ -7,75 +7,99 @@ public class BlockMoveScript : MonoBehaviour
     public float dropRate = 3;
     private float timer = 0;
     public GameObject Block;
-    private GameLogicScript.GridCell CurrentGridCell { get; set; }
-    private float[] GameBoardFloor = { -4.5f, -4.5f, -4.5f, -4.5f, -4.5f, -4.5f, -4.5f, -4.5f };
+    private float gameFloor = -4.5f;
+    private float leftWall = -3.5f;
+    private float rightWall = 3.5f;
+    private bool blockLeftMove = false;
+    private bool blockRightMove = false;
 
 
 
     // Start is called before the first frame update
     void Start()
     {
-        //ThreeByOneRed = GameObject.FindGameObjectWithTag("ThreeByOneRed");
-
-        // Access GameLogicScript
-        GameLogicScript gameLogicScript = FindObjectOfType<GameLogicScript>();
-
-        //Vector2 pointToFind = new Vector2(2.5f, 3.5f);
-        //string foundId = gameLogicScript.FindCellId(pointToFind);
-        //Debug.Log($"Id of the cell at ({pointToFind.x}, {pointToFind.y}): {foundId}");
-
-
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        GameLogicScript gameLogicScript = FindObjectOfType<GameLogicScript>();
-        CurrentGridCell = gameLogicScript.FindGridCellByPosition(Block);
-        int CurrentColumn = gameLogicScript.ExtractNumberFromGridCell(CurrentGridCell);
-        
+        // Move down timer
+        if (timer < dropRate)
+        {
+            timer += Time.deltaTime;
+        }
+        else
+        {
+            MoveDown();
+            timer = 0;
+        }
 
-        // If blocks y position is more than the blocks columns current floor, move down
-        //if (Block.transform.position.y > GameBoardFloor[CurrentColumn])
-        //{
-            if (timer < dropRate)
-            {
-                timer += Time.deltaTime;
-            }
-            else
-            {
-                MoveDown();
-                timer = 0;
-            }
-        //}
-        // Else set the GridCell as occupied
-        //else
-        //{
-        //    Debug.Log("occupied else");
-        //    gameLogicScript.SetGridCellOccupied(CurrentGridCell);
-        //    GameBoardFloor[CurrentColumn] = CurrentGridCell.Position.y + 1;
-        //}
-        //Debug.Log(GameBoardFloor[CurrentColumn]);
+        // Check for arrow key input
+        if (Input.GetKeyDown(KeyCode.LeftArrow) && Block.transform.position.x > leftWall && !blockLeftMove)
+        {
+            Block.transform.position = new Vector3(Block.transform.position.x - 1f, Block.transform.position.y, Block.transform.position.z);
+        }
 
-        // Access BlockScript
-        //BlockScript blockScript = GetComponent<BlockScript>();
-        //if (blockScript != null)
-        //{
-        //    GameLogicScript.GridCell currentCell = blockScript.CurrentGridCell;
-        //    if (currentCell != null)
-        //    {
-        //        // Use the current cell information
-        //        Debug.Log($"Block is in cell {currentCell.Id}");
-        //    }
-        //}
+        if (Input.GetKeyDown(KeyCode.RightArrow) && Block.transform.position.x < rightWall && !blockRightMove)
+        {
+            Block.transform.position = new Vector3(Block.transform.position.x - -1f, Block.transform.position.y, Block.transform.position.z);
+        }
+
+        if (Input.GetKeyDown(KeyCode.DownArrow) && Block.transform.position.y > gameFloor)
+        {
+            Debug.Log("down key press");
+            Block.transform.position = new Vector3(Block.transform.position.x, Block.transform.position.y - 1f, Block.transform.position.z);
+        }
+    }
+
+    void OnTriggerStay2D(Collider2D collision)
+    {
+        // Access the GameObject that has made the collision
+        GameObject collidedObject = collision.gameObject;
+
+        // if collide object's x is more than the block's (ie its on the right), block right moving
+        if (collidedObject.transform.position.x > Block.transform.position.x)
+        {
+            blockRightMove = true;
+        }
+
+        // if collide object's x is less than the block's (ie its on the left), block left moving
+        if (collidedObject.transform.position.x < Block.transform.position.x)
+        {
+            blockLeftMove = true;
+        }
+
+    }
+
+    void OnTriggerExit2D(Collider2D collision)
+    {
+        // This basically just does the opposite of the OnTrigger, to re-allow movement once there's no longer a block on the left or right of it
+        GameObject exitedObject = collision.gameObject;
+
+        if (exitedObject.transform.position.x > Block.transform.position.x)
+        {
+            blockRightMove = false;
+        }
+
+        if (exitedObject.transform.position.x < Block.transform.position.x)
+        {
+            blockLeftMove = false;
+        }
     }
 
     void MoveDown()
     {
-        //transform.Translate(Vector3.down, Space.World);
         Block.transform.position += Vector3.down;
     }
+
+
+
+
+
+
+
+
 
     [ContextMenu("Manually Move Down")]
     void ManuallyMoveDown()
